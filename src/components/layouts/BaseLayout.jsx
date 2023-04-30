@@ -5,16 +5,16 @@ import Footer from "./Footer";
 import { Outlet } from "react-router-dom";
 
 const BaseLayout = () => {
-    return (
-        <>
-            <nav>
-                <CustomNavbar />
-            </nav>
-            <Header />
-            <Outlet />
-            <Footer />
-        </>
-    );
+  return (
+    <>
+      <nav>
+        <CustomNavbar />
+      </nav>
+      <Header />
+      <Outlet />
+      <Footer />
+    </>
+  );
 };
 
 export default BaseLayout;

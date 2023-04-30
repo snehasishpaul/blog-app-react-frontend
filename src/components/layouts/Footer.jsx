@@ -1,11 +1,16 @@
+import { useEffect, useState } from "react";
+import classes from "./Footer.module.css";
+
 const Footer = () => {
-    return (
-        <>
-            <footer>
-                <h1>this is footer</h1>
-            </footer>
-        </>
-    );
+  const currentYear = new Date().getFullYear();
+
+  return (
+    <>
+      <footer className={classes.footer}>
+        <p>MyBlogs {currentYear} | ©Snehasish</p>
+      </footer>
+    </>
+  );
 };
 
 export default Footer;
