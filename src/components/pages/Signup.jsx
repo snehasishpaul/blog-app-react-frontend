@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import jquery from "jquery";
+import parsley from "parsleyjs";
+import { useApi } from "../hooks/useApi";
 import {
   Button,
   Card,
@@ -7,7 +10,6 @@ import {
   CardHeader,
   Col,
   Container,
-  Form,
   FormFeedback,
   FormGroup,
   Input,
@@ -23,9 +25,15 @@ const Signup = () => {
     about: "",
   });
 
-  const [error, setError] = useState({
-    error: {},
-  });
+  const { callApi, error, setError } = useApi();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const registrationForm = useRef();
+
+  useEffect(() => {
+    jquery(registrationForm.current).parsley();
+  }, []);
 
   const inputChangeHandler = (event, field) => {
     setData((prevData) => {
@@ -34,40 +42,16 @@ const Signup = () => {
   };
 
   const postData = async (data) => {
+    setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:9090/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "Application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const respData = await response.json();
-
-      if (!response.ok) {
-        console.dir(response);
-        if (response.status === 404) {
-          setError({
-            message: "404 ERROR !! Bad Request",
-          });
-        } else {
-          setError({
-            ...respData,
-          });
-        }
-
-        for (let field in respData) {
-          toast.error(respData[field]);
-        }
-        throw new Error(response.status);
-      }
+      let respData = await callApi("/api/auth/register", "POST", data);
       console.log(respData);
       toast.success("Registration Successful");
       resetHandler();
     } catch (error) {
       console.log(error);
-      toast.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,7 +60,6 @@ const Signup = () => {
     try {
       postData(data);
     } catch (error) {
-      // toast.error(error.message);
       console.error(error);
     }
   };
@@ -99,7 +82,13 @@ const Signup = () => {
             <Card>
               <CardHeader>Please Fill The Details</CardHeader>
               <CardBody>
-                <Form onSubmit={submitHandler}>
+                <form
+                  ref={registrationForm}
+                  onSubmit={submitHandler}
+                  data-parsley-validate
+                  data-parsley-focus="none"
+                  noValidate
+                >
                   <FormGroup>
                     <Label for="name">Name</Label>
                     <Input
@@ -110,6 +99,10 @@ const Signup = () => {
                       onChange={(e) => inputChangeHandler(e, "name")}
                       value={data.name}
                       invalid={error?.name ? true : false}
+                      data-parsley-trigger="focusout"
+                      data-parsley-required-message="Name is required."
+                      required
+                      disabled={isLoading}
                     />
                     <FormFeedback>{error?.name}</FormFeedback>
                   </FormGroup>
@@ -123,6 +116,10 @@ const Signup = () => {
                       onChange={(e) => inputChangeHandler(e, "email")}
                       value={data.email}
                       invalid={error?.email ? true : false}
+                      data-parsley-trigger="focusout"
+                      data-parsley-required-message="Email is required."
+                      required
+                      disabled={isLoading}
                     />
                     <FormFeedback>{error?.email}</FormFeedback>
                   </FormGroup>
@@ -136,6 +133,10 @@ const Signup = () => {
                       onChange={(e) => inputChangeHandler(e, "password")}
                       value={data.password}
                       invalid={error?.password ? true : false}
+                      data-parsley-trigger="focusout"
+                      data-parsley-required-message="Password is required."
+                      required
+                      disabled={isLoading}
                     />
                     <FormFeedback>{error?.password}</FormFeedback>
                   </FormGroup>
@@ -150,23 +151,28 @@ const Signup = () => {
                       onChange={(e) => inputChangeHandler(e, "about")}
                       value={data.about}
                       invalid={error?.about ? true : false}
+                      data-parsley-trigger="focusout"
+                      data-parsley-required-message="About is required."
+                      required
+                      disabled={isLoading}
                     />
                     <FormFeedback>{error?.about}</FormFeedback>
                   </FormGroup>
                   <Container className="text-center">
-                    <Button color="success" type="submit">
-                      Register
+                    <Button disabled={isLoading} color="success" type="submit">
+                      {isLoading ? "Registering..." : "Register"}
                     </Button>
                     <Button
                       onClick={resetHandler}
                       className="ms-2"
                       color="warning"
                       type="reset"
+                      disabled={isLoading}
                     >
                       Reset
                     </Button>
                   </Container>
-                </Form>
+                </form>
               </CardBody>
             </Card>
           </Col>

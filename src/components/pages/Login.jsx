@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import parsley from "parsleyjs";
+import jquery from "jquery";
 import {
   Button,
   Card,
@@ -7,13 +9,13 @@ import {
   CardHeader,
   Col,
   Container,
-  Form,
   FormFeedback,
   FormGroup,
   Input,
   Label,
   Row,
 } from "reactstrap";
+import { useApi } from "../hooks/useApi";
 
 import { doLogin } from "../auth/auth";
 
@@ -23,9 +25,15 @@ const Login = () => {
     password: "",
   });
 
-  const [error, setError] = useState({
-    error: {},
-  });
+  const { callApi, error, setError } = useApi();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loginForm = useRef();
+
+  useEffect(() => {
+    jquery(loginForm.current).parsley();
+  }, []);
 
   const inputChangeHandler = (event, field) => {
     setUserData((prevData) => {
@@ -34,30 +42,10 @@ const Login = () => {
   };
 
   const loginRequest = async (userData) => {
+    setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:9090/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "Application/json",
-        },
-        body: JSON.stringify(userData),
-      });
+      let respData = await callApi("/api/auth/login", "POST", userData);
 
-      const respData = await response.json();
-
-      if (!response.ok) {
-        // if (response.status === 404) {
-        //   toast.error("404 ERROR !! Something went wrong !!!");
-        //   return;
-        // }
-        setError({
-          ...respData,
-        });
-        for (let field in respData) {
-          toast.error(respData[field]);
-        }
-        throw new Error(response.status);
-      }
       console.log(respData);
       toast.success("Login Successful");
       doLogin(respData, () => {
@@ -66,7 +54,8 @@ const Login = () => {
       resetHandler();
     } catch (error) {
       console.error(error);
-      toast.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -84,7 +73,6 @@ const Login = () => {
       loginRequest(userData);
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong !!");
     }
   };
 
@@ -104,7 +92,13 @@ const Login = () => {
             <Card>
               <CardHeader>Login Credentials:</CardHeader>
               <CardBody>
-                <Form>
+                <form
+                  ref={loginForm}
+                  onSubmit={submitHandler}
+                  data-parsley-validate
+                  data-parsley-focus="none"
+                  noValidate
+                >
                   <FormGroup>
                     <Label for="email">Email</Label>
                     <Input
@@ -115,6 +109,10 @@ const Login = () => {
                       onChange={(e) => inputChangeHandler(e, "username")}
                       value={userData.username}
                       invalid={error?.username ? true : false}
+                      data-parsley-trigger="focusout"
+                      data-parsley-required-message="Email is required."
+                      required
+                      disabled={isLoading}
                     />
                     <FormFeedback>{error?.username}</FormFeedback>
                   </FormGroup>
@@ -128,16 +126,16 @@ const Login = () => {
                       onChange={(e) => inputChangeHandler(e, "password")}
                       value={userData.password}
                       invalid={error?.password ? true : false}
+                      data-parsley-trigger="focusout"
+                      data-parsley-required-message="Password is required."
+                      required
+                      disabled={isLoading}
                     />
                     <FormFeedback>{error?.password}</FormFeedback>
                   </FormGroup>
                   <Container className="text-center">
-                    <Button
-                      onClick={submitHandler}
-                      color="success"
-                      type="submit"
-                    >
-                      Login
+                    <Button color="success" type="submit">
+                      {isLoading ? "Logging in..." : "Login"}
                     </Button>
                     <Button
                       onClick={resetHandler}
@@ -148,7 +146,7 @@ const Login = () => {
                       Reset
                     </Button>
                   </Container>
-                </Form>
+                </form>
               </CardBody>
             </Card>
           </Col>

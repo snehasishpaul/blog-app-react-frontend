@@ -22,8 +22,8 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/services" element={<Services />} />
             <Route path="/about" element={<About />} />
-            <Route path="*" component={<ErrorPage />} />
           </Route>
+          <Route path="*" component={<ErrorPage />} />
         </Routes>
         <ToastContainer
           position="top-right"
