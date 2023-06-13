@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useLocalStorageModified } from "../hooks/useLocalStorageModified";
 
 const AuthContext = React.createContext({
   isLoggedInState: false,
@@ -12,6 +13,7 @@ const AuthContext = React.createContext({
 export const AuthContextProvider = (props) => {
   const [isLoggedInState, setIsLoggedInState] = useState(false);
   const [user, setUser] = useState(undefined);
+  const [getData, setData, removeData] = useLocalStorageModified("data");
 
   useEffect(() => {
     setIsLoggedInState(isLoggedIn());
@@ -20,7 +22,7 @@ export const AuthContextProvider = (props) => {
 
   //isLoggedIn
   const isLoggedIn = () => {
-    const userData = localStorage.getItem("data");
+    const userData = getData();
     if (userData != null) {
       return true;
     }
@@ -29,15 +31,14 @@ export const AuthContextProvider = (props) => {
 
   //doLogin : data => set to localstorage
   const doLogin = (data, next) => {
-    localStorage.setItem("data", JSON.stringify(data));
-    sessionStorage.setItem("data", JSON.stringify(data));
+    setData(data);
     setIsLoggedInState(true);
     next();
   };
 
   //doLogout
   const doLogout = (next) => {
-    localStorage.removeItem("data");
+    removeData();
     setIsLoggedInState(false);
     next();
   };
@@ -45,9 +46,9 @@ export const AuthContextProvider = (props) => {
   //get current user
   const getCurrentUserDetail = () => {
     if (isLoggedIn()) {
-      return JSON.parse(localStorage.getItem("data")).userDto;
+      return getData().userDto;
     }
-    return false;
+    return undefined;
   };
 
   const value = useMemo(
