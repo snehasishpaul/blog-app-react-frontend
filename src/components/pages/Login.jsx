@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import parsley from "parsleyjs";
 import jquery from "jquery";
@@ -17,19 +17,19 @@ import {
 } from "reactstrap";
 import { useApi } from "../hooks/useApi";
 
-import { doLogin } from "../auth/auth";
+import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/auth-context";
 
-const Login = () => {
+const Login = (props) => {
   const [userData, setUserData] = useState({
     username: "",
     password: "",
   });
-
   const { callApi, error, setError } = useApi();
-
   const [isLoading, setIsLoading] = useState(false);
-
   const loginForm = useRef();
+  const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
 
   useEffect(() => {
     jquery(loginForm.current).parsley();
@@ -48,10 +48,12 @@ const Login = () => {
 
       console.log(respData);
       toast.success("Login Successful");
-      doLogin(respData, () => {
+      authContext.doLogin(respData, () => {
         console.log("Login details are saved to localstorage");
+        resetHandler();
+        //redirect to user dashboard
+        navigate("/user/dashboard");
       });
-      resetHandler();
     } catch (error) {
       console.error(error);
     } finally {

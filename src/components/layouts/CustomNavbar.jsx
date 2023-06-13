@@ -1,61 +1,114 @@
-import { useState } from "react";
-import { NavLink as ReactLink } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { NavLink as ReactLink, useNavigate } from "react-router-dom";
 import {
-    Collapse,
-    Navbar,
-    NavbarToggler,
-    NavbarBrand,
-    Nav,
-    NavItem,
-    NavLink,
-    NavbarText,
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  NavLink,
 } from "reactstrap";
+import { toast } from "react-toastify";
+import AuthContext from "../context/auth-context";
+import classes from "./CustomNavbar.module.css";
 
 const CustomNavbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
+  const authContext = useContext(AuthContext);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLogin, setIsLogin] = useState(false);
+  const [user, setUser] = useState(undefined);
+  const navigate = useNavigate();
 
-    const toggle = () => setIsOpen(!isOpen);
+  useEffect(() => {
+    setIsLogin(authContext.isLoggedIn());
+    setUser(authContext.getCurrentUserDetail());
+  }, [authContext.isLoggedInState]);
 
-    return (
-        <div>
-            <Navbar color="dark" dark expand="md">
-                <NavbarBrand tag={ReactLink} to="/">
-                    MyBlogs
-                </NavbarBrand>
-                <NavbarToggler onClick={toggle} />
-                <Collapse isOpen={isOpen} navbar>
-                    <Nav className="me-auto" navbar>
-                        <NavItem>
-                            <NavLink tag={ReactLink} to="/">
-                                Home
-                            </NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink tag={ReactLink} to="/signup">
-                                Signup
-                            </NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink tag={ReactLink} to="/login">
-                                Login
-                            </NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink tag={ReactLink} to="/services">
-                                Services
-                            </NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink tag={ReactLink} to="/about">
-                                About
-                            </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <NavbarText>BlogApp</NavbarText>
-                </Collapse>
-            </Navbar>
-        </div>
-    );
+  const toggle = () => setIsOpen(!isOpen);
+
+  function logoutHandler() {
+    authContext.doLogout(() => {
+      console.log("logout successful");
+    });
+    toast.success("Logout Successful");
+    setIsLogin(false);
+    //redirect to login page
+    navigate("/login");
+  }
+
+  return (
+    <div>
+      <Navbar color="dark" dark expand="md" className="px-5">
+        <NavbarBrand tag={ReactLink} to="/">
+          MyBlogs
+        </NavbarBrand>
+        <NavbarToggler onClick={toggle} />
+        <Collapse isOpen={isOpen} navbar>
+          <Nav className="me-auto" navbar>
+            <NavItem>
+              <NavLink tag={ReactLink} to="/">
+                Home
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={ReactLink} to="/services">
+                Services
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={ReactLink} to="/about">
+                About
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink tag={ReactLink} to="/contact-us">
+                Contact Us
+              </NavLink>
+            </NavItem>
+          </Nav>
+          <Nav navbar>
+            {!isLogin ? (
+              <>
+                <NavItem>
+                  <NavLink tag={ReactLink} to="/signup">
+                    Signup
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={ReactLink} to="/login">
+                    Login
+                  </NavLink>
+                </NavItem>
+              </>
+            ) : (
+              <>
+                <NavItem>
+                  <NavLink tag={ReactLink} to="/user/dashboard">
+                    {user.email}
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink tag={ReactLink} to="/user/profile">
+                    Profile
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    // tag={ReactLink}
+                    onClick={logoutHandler}
+                    className={classes.logoutBtn}
+                  >
+                    Logout
+                  </NavLink>
+                </NavItem>
+              </>
+            )}
+          </Nav>
+        </Collapse>
+      </Navbar>
+    </div>
+  );
 };
 
 export default CustomNavbar;
