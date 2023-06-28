@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import parsley from "parsleyjs";
 import jquery from "jquery";
@@ -18,7 +18,8 @@ import {
 import { useApi } from "../hooks/useApi";
 
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../context/auth-context";
+// import AuthContext from "../context/auth-context";
+import useAuth from "../hooks/useAuth";
 
 const Login = (props) => {
   const [userData, setUserData] = useState({
@@ -29,7 +30,8 @@ const Login = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const loginForm = useRef();
   const navigate = useNavigate();
-  const authContext = useContext(AuthContext);
+  // const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   useEffect(() => {
     jquery(loginForm.current).parsley();
@@ -52,7 +54,7 @@ const Login = (props) => {
         console.log("Login details are saved to localstorage");
         resetHandler();
         //redirect to user dashboard
-        navigate("/user/dashboard");
+        navigate("/user/dashboard", { replace: true });
       });
     } catch (error) {
       console.error(error);
@@ -115,6 +117,7 @@ const Login = (props) => {
                       data-parsley-required-message="Email is required."
                       required
                       disabled={isLoading}
+                      autoFocus
                     />
                     <FormFeedback>{error?.username}</FormFeedback>
                   </FormGroup>

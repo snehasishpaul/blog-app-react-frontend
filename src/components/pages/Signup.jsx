@@ -103,6 +103,7 @@ const Signup = () => {
                       data-parsley-required-message="Name is required."
                       required
                       disabled={isLoading}
+                      autoFocus
                     />
                     <FormFeedback>{error?.name}</FormFeedback>
                   </FormGroup>
