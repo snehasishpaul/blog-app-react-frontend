@@ -76,7 +76,7 @@ const Signup = () => {
 
   return (
     <>
-      <Container>
+      <Container className="py-32">
         <Row>
           <Col sm={{ size: 6, offset: 3 }}>
             <Card>

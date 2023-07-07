@@ -34,21 +34,25 @@ const CustomNavbar = () => {
     toast.success("Logout Successful");
     setIsLogin(false);
     //redirect to login page
-    navigate("/login");
+    navigate("/login", { replace: true });
   }
 
   return (
-    <div>
-      <Navbar color="dark" dark expand="md" className="px-5">
+    <div className="">
+      <Navbar
+        dark
+        expand="md"
+        className="px-5 bg-slate-900 shadow-2xl shadow-black"
+      >
         <NavbarBrand tag={ReactLink} to="/">
-          MyBlogs
+          <img src="logo.png" alt="logo" className="w-20" />
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="me-auto" navbar>
             <NavItem>
               <NavLink tag={ReactLink} to="/">
-                Home
+                Feed
               </NavLink>
             </NavItem>
             <NavItem>

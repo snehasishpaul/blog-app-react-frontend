@@ -11,7 +11,9 @@ const BaseLayout = () => {
         <CustomNavbar />
       </nav>
       <Header />
-      <Outlet />
+      <main className="flex flex-col items-center justify-center">
+        <Outlet />
+      </main>
       <Footer />
     </>
   );

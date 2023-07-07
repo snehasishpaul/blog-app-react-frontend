@@ -16,10 +16,11 @@ import {
   Row,
 } from "reactstrap";
 import { useApi } from "../hooks/useApi";
-
 import { useNavigate } from "react-router-dom";
 // import AuthContext from "../context/auth-context";
 import useAuth from "../hooks/useAuth";
+import Cookies from "universal-cookie";
+// import Cookies from "js-cookie";
 
 const Login = (props) => {
   const [userData, setUserData] = useState({
@@ -32,6 +33,7 @@ const Login = (props) => {
   const navigate = useNavigate();
   // const authContext = useContext(AuthContext);
   const authContext = useAuth();
+  const cookies = new Cookies();
 
   useEffect(() => {
     jquery(loginForm.current).parsley();
@@ -48,10 +50,20 @@ const Login = (props) => {
     try {
       let respData = await callApi("/api/auth/login", "POST", userData);
 
+      // cookies.set("token", respData.token, {
+      //   path: "/",
+      //   // expires: new Date(5 * 60 * 60 * 1000),
+      //   // httpOnly: true,
+      //   secure: true,
+      // }); //universal-cookie
+
+      // Cookies.set("jwt_token", respData.token, { secure: true });  //js-cookie
+
       console.log(respData);
       toast.success("Login Successful");
       authContext.doLogin(respData, () => {
         console.log("Login details are saved to localstorage");
+
         resetHandler();
         //redirect to user dashboard
         navigate("/user/dashboard", { replace: true });
@@ -90,11 +102,13 @@ const Login = (props) => {
 
   return (
     <>
-      <Container>
+      <div className="container py-52">
         <Row>
           <Col sm={{ size: 6, offset: 3 }}>
-            <Card>
-              <CardHeader>Login Credentials:</CardHeader>
+            <Card className="">
+              <CardHeader className="text-black ">
+                Login Credentials:
+              </CardHeader>
               <CardBody>
                 <form
                   ref={loginForm}
@@ -156,7 +170,7 @@ const Login = (props) => {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </div>
     </>
   );
 };
