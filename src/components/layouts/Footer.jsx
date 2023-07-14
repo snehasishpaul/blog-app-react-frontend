@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import classes from "./Footer.module.css";
 
 const Footer = () => {
@@ -6,8 +5,8 @@ const Footer = () => {
 
   return (
     <>
-      <footer className={classes.footer}>
-        <p>MyBlogs {currentYear} | ©Snehasish</p>
+      <footer className="absolute bottom-0 left-0 flex justify-center items-center w-full h-12 text-white bg-indigo-950">
+        <p className="m-0 p-0">MyBlogs {currentYear} | ©Snehasish</p>
       </footer>
     </>
   );

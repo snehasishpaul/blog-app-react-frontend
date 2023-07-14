@@ -44,7 +44,7 @@ const Signup = () => {
   const postData = async (data) => {
     setIsLoading(true);
     try {
-      let respData = await callApi("/api/auth/register", "POST", data);
+      let respData = await callApi("/api/v1/auth/register", "POST", data);
       console.log(respData);
       toast.success("Registration Successful");
       resetHandler();
@@ -80,7 +80,9 @@ const Signup = () => {
         <Row>
           <Col sm={{ size: 6, offset: 3 }}>
             <Card>
-              <CardHeader>Please Fill The Details</CardHeader>
+              <CardHeader className="text-black">
+                Please Fill The Details
+              </CardHeader>
               <CardBody>
                 <form
                   ref={registrationForm}

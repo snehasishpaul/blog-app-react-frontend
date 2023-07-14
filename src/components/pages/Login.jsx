@@ -33,7 +33,7 @@ const Login = (props) => {
   const navigate = useNavigate();
   // const authContext = useContext(AuthContext);
   const authContext = useAuth();
-  const cookies = new Cookies();
+  // const cookies = new Cookies();
 
   useEffect(() => {
     jquery(loginForm.current).parsley();
@@ -48,7 +48,7 @@ const Login = (props) => {
   const loginRequest = async (userData) => {
     setIsLoading(true);
     try {
-      let respData = await callApi("/api/auth/login", "POST", userData);
+      let respData = await callApi("/api/v1/auth/login", "POST", userData);
 
       // cookies.set("token", respData.token, {
       //   path: "/",
@@ -104,7 +104,7 @@ const Login = (props) => {
     <>
       <div className="container py-52">
         <Row>
-          <Col sm={{ size: 6, offset: 3 }}>
+          <Col sm={{ size: 4, offset: 4 }}>
             <Card className="">
               <CardHeader className="text-black ">
                 Login Credentials:
@@ -153,7 +153,7 @@ const Login = (props) => {
                     <FormFeedback>{error?.password}</FormFeedback>
                   </FormGroup>
                   <Container className="text-center">
-                    <Button color="success" type="submit">
+                    <Button color="success" type="submit" disabled={isLoading}>
                       {isLoading ? "Logging in..." : "Login"}
                     </Button>
                     <Button
@@ -161,6 +161,7 @@ const Login = (props) => {
                       color="warning"
                       className="ms-2"
                       type="reset"
+                      disabled={isLoading}
                     >
                       Reset
                     </Button>

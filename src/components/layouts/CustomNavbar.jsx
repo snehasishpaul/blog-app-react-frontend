@@ -12,6 +12,7 @@ import {
 import { toast } from "react-toastify";
 import AuthContext from "../context/auth-context";
 import classes from "./CustomNavbar.module.css";
+import logo from "../../images/logo.png";
 
 const CustomNavbar = () => {
   const authContext = useContext(AuthContext);
@@ -38,14 +39,10 @@ const CustomNavbar = () => {
   }
 
   return (
-    <div className="">
-      <Navbar
-        dark
-        expand="md"
-        className="px-5 bg-slate-900 shadow-2xl shadow-black"
-      >
+    <div className=" bg-indigo-950 shadow-2xl shadow-black">
+      <Navbar dark expand="md" className="px-5">
         <NavbarBrand tag={ReactLink} to="/">
-          <img src="logo.png" alt="logo" className="w-20" />
+          <img src={logo} alt="logo" className="w-20" />
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>

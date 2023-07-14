@@ -18,7 +18,7 @@ import { AuthContextProvider } from "./components/context/auth-context";
 
 function App() {
   return (
-    <div className="App w-screen h-screen bg-slate-800 text-white">
+    <div className="App w-screen h-screen bg-indigo-900 text-white">
       <BrowserRouter>
         <AuthContextProvider>
           <Routes>

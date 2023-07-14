@@ -31,6 +31,16 @@ export const useApi = () => {
             setError({
               message: "404 ERROR !! Bad Request",
             });
+          }
+          if (response.status === 401) {
+            setError({
+              message: "401 ERROR !! Unauthorized ! Access Denied !!",
+            });
+          }
+          if (response.status === 403) {
+            setError({
+              message: "403 ERROR !! Unauthorized ! Access Denied !!",
+            });
           } else {
             setError({
               ...respData,
