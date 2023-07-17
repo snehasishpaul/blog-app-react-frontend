@@ -51,6 +51,12 @@ export const AuthContextProvider = (props) => {
     return undefined;
   };
 
+  const getToken = () => {
+    if (isLoggedIn()) {
+      return getData().token;
+    }
+  };
+
   const value = useMemo(
     () => ({
       isLoggedInState: isLoggedInState,
@@ -59,6 +65,7 @@ export const AuthContextProvider = (props) => {
       doLogin: doLogin,
       doLogout: doLogout,
       getCurrentUserDetail: getCurrentUserDetail,
+      getToken: getToken,
     }),
     [user]
   );

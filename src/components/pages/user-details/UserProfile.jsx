@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import parsley from "parsleyjs";
 import jquery from "jquery";
 import { useApi } from "../../hooks/useApi";
 import { toast } from "react-toastify";
+import AuthContext from "../../context/auth-context";
 
 const UserProfile = () => {
   const loginForm = useRef();
@@ -10,14 +11,22 @@ const UserProfile = () => {
   const [postData, setPostData] = useState({
     postTitle: "",
     postContent: "",
-    postCategory: "",
+    postCategoryId: "",
   });
-  const { callApi, error, setError } = useApi();
+  const { callApi, error } = useApi();
+  const twiceRef = useRef(false);
+  const [categories, setCategories] = useState([]);
+  const authContext = useContext(AuthContext);
+  const [user, setUser] = useState(undefined);
 
   useEffect(() => {
     jquery(loginForm.current).parsley();
-    return () => {
+    if (twiceRef.current === false) {
+      setUser(authContext.getCurrentUserDetail());
       fetchCategories();
+    }
+    return () => {
+      twiceRef.current = true;
     };
   }, []);
 
@@ -25,10 +34,10 @@ const UserProfile = () => {
     setIsLoading(true);
     try {
       let respData = await callApi("/api/v1/categories/", "GET");
-
-      console.log(respData);
-    } catch (error) {
-      console.error(error);
+      setCategories(respData);
+    } catch (err) {
+      toast.error(error);
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -40,8 +49,54 @@ const UserProfile = () => {
     });
   };
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
+    if (postData.postTitle.trim() === "") {
+      toast.error("Post Title cannot be empty");
+      return;
+    }
+    if (postData.postContent.trim() === "") {
+      toast.error("Post Content cannot be empty");
+      return;
+    }
+    if (postData.postCategoryId === "") {
+      toast.error("Post Category cannot be empty");
+    }
+
+    //post data submission
+    setIsLoading(true);
+    try {
+      const body = {
+        postTitle: postData.postTitle,
+        postContent: postData.postContent,
+        postCategoryId: postData.postCategoryId,
+        postUserId: user.id,
+      };
+      const response = await callApi(
+        "/api/v1/users/categories/posts",
+        "POST",
+        body,
+        {
+          Authorization: `Bearer ${authContext.getToken()}`,
+        }
+      );
+
+      toast.success("Post Created Successfully");
+      resetHandler();
+    } catch (e) {
+      toast.error(e.message);
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetHandler = () => {
+    setPostData({
+      postTitle: "",
+      postContent: "",
+      postCategoryId: "",
+    });
   };
 
   return (
@@ -114,20 +169,22 @@ const UserProfile = () => {
               id="category"
               className="bg-gray-600 border border-gray-300 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
               required
-              onChange={(e) => inputChangeHandler(e, "postCategory")}
+              onChange={(e) => inputChangeHandler(e, "postCategoryId")}
               value={postData.postCategory}
               // invalid={error?.postCategory ? true : false}
               data-parsley-trigger="focusout"
               data-parsley-required-message="Post Category is required."
               disabled={isLoading}
+              defaultValue={0}
             >
-              <option defaultValue={null} disabled>
-                Category...
+              <option value={0} disabled>
+                --Category--
               </option>
-              <option value="US">United States</option>
-              <option value="CA">Canada</option>
-              <option value="FR">France</option>
-              <option value="DE">Germany</option>
+              {categories.map((cat) => (
+                <option key={cat.categoryId} value={cat.categoryId}>
+                  {cat.categoryTitle}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex justify-around items-center">
@@ -142,6 +199,7 @@ const UserProfile = () => {
               type="reset"
               className="ms-5 w-full text-white bg-yellow-600 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
               disabled={isLoading}
+              onClick={resetHandler}
             >
               Reset Post
             </button>

@@ -9,9 +9,10 @@ export const useApi = () => {
     error: {},
   });
 
-  const callApi = async (path, method, body) => {
+  const callApi = async (path, method, body, headerData) => {
     return new Promise(async (resolve, reject) => {
       let headers = {
+        ...headerData,
         "Content-Type": "application/json",
       };
 
@@ -23,35 +24,36 @@ export const useApi = () => {
           bodyUsed: body ? true : false,
         });
 
-        let respData = await response.json();
-
         if (!response.ok) {
-          console.dir(response);
-          if (response.status === 404) {
-            setError({
-              message: "404 ERROR !! Bad Request",
-            });
-          }
-          if (response.status === 401) {
-            setError({
-              message: "401 ERROR !! Unauthorized ! Access Denied !!",
-            });
-          }
-          if (response.status === 403) {
-            setError({
-              message: "403 ERROR !! Unauthorized ! Access Denied !!",
-            });
+          // console.dir(response);
+          if (response.status === 400) {
+            let resp = await response.json();
+            for (let field in resp) {
+              toast.error(resp[field]);
+            }
+            return reject(new Error(`400 Bad Request Error : ${resp.message}`));
+          } else if (response.status === 404) {
+            let resp = await response.json();
+            for (let field in resp) {
+              toast.error(resp[field]);
+            }
+            return reject(new Error(`404 Not Found Error : ${resp.message}`));
+          } else if (response.status === 401) {
+            return reject(
+              new Error("401 ERROR !! Unauthorized ! Access Denied !!")
+            );
+          } else if (response.status === 403) {
+            return reject(
+              new Error("403 ERROR !! Unauthorized ! Access Denied !!")
+            );
           } else {
-            setError({
-              ...respData,
-            });
+            return reject(
+              new Error("Something went wrong outside response catch")
+            );
           }
-
-          for (let field in respData) {
-            toast.error(respData[field]);
-          }
-          return reject(new Error(response.status));
         }
+
+        let respData = await response.json();
 
         return resolve(respData);
       } catch (error) {
