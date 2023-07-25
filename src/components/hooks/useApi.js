@@ -22,7 +22,7 @@ export const useApi = () => {
           headers,
           body: body ? JSON.stringify(body) : undefined,
           bodyUsed: body ? true : false,
-          credentials: "same-origin",
+          credentials: "include",
         });
 
         if (!response.ok) {
