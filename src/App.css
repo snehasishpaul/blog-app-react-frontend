@@ -1,3 +1,8 @@
+/* height width setup */
+.App {
+  min-height: calc(100vh - 52px);
+}
+
 /* Parsley CSS */
 
 .parsley-success {

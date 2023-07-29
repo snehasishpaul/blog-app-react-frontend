@@ -15,10 +15,11 @@ import PrivateLayout from "./components/layouts/PrivateLayout";
 import UserDashboard from "./components/pages/user-details/UserDashboard";
 import UserProfile from "./components/pages/user-details/UserProfile";
 import { AuthContextProvider } from "./components/context/auth-context";
+import NewsFeed from "./components/pages/NewsFeed";
 
 function App() {
   return (
-    <div className="App w-screen h-screen bg-indigo-900 text-white">
+    <div className="App h-full bg-indigo-900 text-white">
       <BrowserRouter>
         <AuthContextProvider>
           <Routes>
@@ -32,6 +33,7 @@ function App() {
               <Route path="/user" element={<PrivateLayout />}>
                 <Route path="dashboard" element={<UserDashboard />} />
                 <Route path="profile" element={<UserProfile />} />
+                <Route path="news-feed" element={<NewsFeed />} />
               </Route>
             </Route>
             <Route path="*" component={<ErrorPage />} />

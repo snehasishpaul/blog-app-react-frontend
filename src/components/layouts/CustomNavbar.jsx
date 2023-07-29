@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import AuthContext from "../context/auth-context";
 import classes from "./CustomNavbar.module.css";
 import logo from "../../images/logo.png";
+import useAxios from "../hooks/useAxios";
 
 const CustomNavbar = () => {
   const authContext = useContext(AuthContext);
@@ -20,6 +21,7 @@ const CustomNavbar = () => {
   const [isLogin, setIsLogin] = useState(false);
   const [user, setUser] = useState(undefined);
   const navigate = useNavigate();
+  const { myAxios } = useAxios();
 
   useEffect(() => {
     setIsLogin(authContext.isLoggedIn());
@@ -28,14 +30,24 @@ const CustomNavbar = () => {
 
   const toggle = () => setIsOpen(!isOpen);
 
-  function logoutHandler() {
-    authContext.doLogout(() => {
-      console.log("logout successful");
-    });
-    toast.success("Logout Successful");
-    setIsLogin(false);
-    //redirect to login page
-    navigate("/login", { replace: true });
+  async function logoutHandler() {
+    try {
+      await myAxios.post("/api/v1/auth/logout");
+      console.log("cookies cleared");
+
+      authContext.doLogout(() => {
+        console.log("logout successful");
+      });
+      toast.success("Logout Successful");
+      setIsLogin(false);
+      //redirect to login page
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Error htting URL", error);
+      toast.error(
+        `${error.message} - ${error.code} - ${error.response.status}`
+      );
+    }
   }
 
   return (
@@ -49,9 +61,16 @@ const CustomNavbar = () => {
           <Nav className="me-auto" navbar>
             <NavItem>
               <NavLink tag={ReactLink} to="/">
-                Feed
+                Home
               </NavLink>
             </NavItem>
+            {isLogin && (
+              <NavItem>
+                <NavLink tag={ReactLink} to="user/news-feed">
+                  News Feed
+                </NavLink>
+              </NavItem>
+            )}
             <NavItem>
               <NavLink tag={ReactLink} to="/services">
                 Services
@@ -85,13 +104,17 @@ const CustomNavbar = () => {
             ) : (
               <>
                 <NavItem>
-                  <NavLink tag={ReactLink} to="/user/dashboard">
-                    {user.email}
+                  <NavLink
+                    className="bg-blue-900 rounded-2xl"
+                    tag={ReactLink}
+                    to="/user/dashboard"
+                  >
+                    {user.name.toUpperCase()}
                   </NavLink>
                 </NavItem>
                 <NavItem>
                   <NavLink tag={ReactLink} to="/user/profile">
-                    Profile
+                    My Profile
                   </NavLink>
                 </NavItem>
                 <NavItem>
