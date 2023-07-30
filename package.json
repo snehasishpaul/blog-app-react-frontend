@@ -13,6 +13,7 @@
     "parsleyjs": "^2.9.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-js-pagination": "^3.0.3",
     "react-router-dom": "^6.9.0",
     "react-scripts": "5.0.1",
     "react-secure-storage": "^1.2.2",

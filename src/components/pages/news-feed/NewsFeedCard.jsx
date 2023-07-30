@@ -13,7 +13,7 @@ const NewsFeed = (props) => {
             /> */}
           </div>
           <div className="p-8 border-1 border-solid border-white rounded-lg">
-            <div className="uppercase tracking-wide text-sm text-white font-semibold">
+            <div className="uppercase tracking-wide text-md text-white font-semibold">
               {props.post.postTitle}
             </div>
             <p className="mt-2 text-slate-400">{props.post.postContent}</p>
