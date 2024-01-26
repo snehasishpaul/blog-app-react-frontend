@@ -16,6 +16,7 @@ import UserDashboard from "./components/pages/user-details/UserDashboard";
 import UserProfile from "./components/pages/user-details/UserProfile";
 import { AuthContextProvider } from "./components/context/auth-context";
 import NewsFeed from "./components/pages/NewsFeed";
+import NewsFeed1 from "./components/pages/NewsFeed1";
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
               <Route path="/user" element={<PrivateLayout />}>
                 <Route path="dashboard" element={<UserDashboard />} />
                 <Route path="profile" element={<UserProfile />} />
-                <Route path="news-feed" element={<NewsFeed />} />
+                <Route path="news-feed" element={<NewsFeed1 />} />
               </Route>
             </Route>
             <Route path="*" component={<ErrorPage />} />

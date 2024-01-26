@@ -2,28 +2,34 @@ import React, { useEffect, useRef, useState } from "react";
 import NewsFeedCard from "./news-feed/NewsFeedCard";
 import useAxios from "../hooks/useAxios";
 import Pagination from "react-js-pagination";
+import { useQuery } from "@tanstack/react-query";
 
 const NewsFeed = () => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { myAxios } = useAxios();
-  const [filter, setFilter] = useState(null);
-  const twiceRef = useRef(false);
+  // const twiceRef = useRef(false);
   let cntPerPage = 5;
   let refPageNo = useRef(1);
   const [pageCount, setPageCount] = useState(1);
   const refCountPerPage = useRef(cntPerPage);
+  const controllerRef = useRef(new AbortController());
 
   useEffect(() => {
-    if (twiceRef.current === false) {
-      loadPosts();
-    }
+    const controller = controllerRef.current;
+    // if (twiceRef.current === false) {
+    //   loadPosts({ signal: controller.signal });
+    // }
+
+    loadPosts({ signal: controller.signal });
     return () => {
-      twiceRef.current = true;
+      // twiceRef.current = true;
+      controller.abort();
+      controllerRef.current = new AbortController();
     };
   }, []);
 
-  const loadPosts = async () => {
+  const loadPosts = async ({ signal }) => {
     // window.scroll(0, 0);
     setIsLoading(true);
     try {
@@ -35,12 +41,21 @@ const NewsFeed = () => {
         }`
       );
 
-      const response = await myAxios.get(filteredParam);
-      // console.log(response.data);
+      const response = await myAxios.get(filteredParam, { signal });
+      console.log(response.data);
       // setPageResponse(response.data);
-      if (response !== "") {
+
+      if (signal.aborted) {
+        // Do nothing if the component has been unmounted
+        return;
+      }
+
+      if (response.data) {
+        // return response.data;
         setPageCount(response.data.totalElements);
         setPosts(response.data.content);
+      } else {
+        throw new Error("Invalid response data"); // Throw an error if the response is not as expected
       }
     } catch (error) {
       console.error(error);
@@ -51,21 +66,21 @@ const NewsFeed = () => {
 
   const handlePageChange = async (e) => {
     refPageNo.current = e;
-    loadPosts();
+    loadPosts({ signal: controllerRef.current.signal });
   };
 
   const onSelectPaginationDrop = async (e) => {
     refPageNo.current = 1;
     refCountPerPage.current = e;
     cntPerPage = e;
-    loadPosts();
+    loadPosts({ signal: controllerRef.current.signal });
   };
 
   return (
     <>
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
+      {isLoading && <div>Loading...</div>}
+      {!isLoading && posts.length === 0 && <p>No content to show</p>}
+      {!isLoading && posts.length > 0 && (
         <>
           <div className="w-5/6">
             <div className="flex justify-between items-center w-full mb-12">
