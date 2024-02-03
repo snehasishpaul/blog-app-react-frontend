@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import Cookies from "universal-cookie";
 // import Cookies from "js-cookie";
+import { LoadingSpinnerDNA } from "../utils/LoadingSpinner";
 
 const Login = (props) => {
   const [userData, setUserData] = useState({
@@ -153,9 +154,19 @@ const Login = (props) => {
                     <FormFeedback>{error?.password}</FormFeedback>
                   </FormGroup>
                   <Container className="text-center">
-                    <Button color="success" type="submit" disabled={isLoading}>
-                      {isLoading ? "Logging in..." : "Login"}
-                    </Button>
+                    {isLoading ? (
+                      <Button color="white" type="submit" disabled={isLoading}>
+                        <LoadingSpinnerDNA h={20} w={20} />
+                      </Button>
+                    ) : (
+                      <Button
+                        color="success"
+                        type="submit"
+                        disabled={isLoading}
+                      >
+                        Login
+                      </Button>
+                    )}
                     <Button
                       onClick={resetHandler}
                       color="warning"

@@ -14,11 +14,13 @@ import AuthContext from "../context/auth-context";
 import classes from "./CustomNavbar.module.css";
 import logo from "../../images/logo.png";
 import useAxios from "../hooks/useAxios";
+import { LoadingSpinnerDNA } from "../utils/LoadingSpinner";
 
 const CustomNavbar = () => {
   const authContext = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState(undefined);
   const navigate = useNavigate();
   const { myAxios } = useAxios();
@@ -32,6 +34,7 @@ const CustomNavbar = () => {
 
   async function logoutHandler() {
     try {
+      setIsLoading(true);
       await myAxios.post("/api/v1/auth/logout");
       console.log("cookies cleared");
 
@@ -47,6 +50,8 @@ const CustomNavbar = () => {
       toast.error(
         `${error.message} - ${error.code} - ${error.response.status}`
       );
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -123,7 +128,7 @@ const CustomNavbar = () => {
                     onClick={logoutHandler}
                     className={classes.logoutBtn}
                   >
-                    Logout
+                    {isLoading ? <LoadingSpinnerDNA h={20} w={20} /> : "Logout"}
                   </NavLink>
                 </NavItem>
               </>

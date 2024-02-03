@@ -3,12 +3,13 @@ import NewsFeedCard from "./news-feed/NewsFeedCard";
 import useAxios from "../hooks/useAxios";
 import Pagination from "react-js-pagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { LoadingSpinnerColorRing } from "../utils/LoadingSpinner";
 
 const NewsFeed1 = () => {
   const { myAxios } = useAxios();
   let cntPerPage = 5;
   let refPageNo = useRef(1);
-  const [pageCount, setPageCount] = useState(1);
+  const [pageCount, setPageCount] = useState();
   const refCountPerPage = useRef(cntPerPage);
   // const controllerRef = useRef(new AbortController());
   const queryClient = useQueryClient();
@@ -18,6 +19,7 @@ const NewsFeed1 = () => {
     queryFn: ({ signal }) => loadPosts({ signal: signal }),
     // staleTime: 5000,
     // refetchOnWindowFocus: false,
+    // gcTime: 0,
   });
 
   const loadPosts = async ({ signal }) => {
@@ -62,9 +64,20 @@ const NewsFeed1 = () => {
 
   return (
     <>
-      {isPending && <div>Loading...</div>}
+      {isPending && (
+        <div>
+          <span>Loading...</span>
+          <LoadingSpinnerColorRing h={80} w={80} />
+        </div>
+      )}
+      {data && !pageCount && (
+        <div>
+          <span>Loading...</span>
+          <LoadingSpinnerColorRing h={80} w={80} />
+        </div>
+      )}
       {isError && <div>Error: {error}</div>}
-      {data && (
+      {data && pageCount && (
         <div className="w-5/6">
           <div className="flex justify-between items-center w-full mb-12">
             <h5>NewsFeed</h5>
