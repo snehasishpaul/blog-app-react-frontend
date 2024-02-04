@@ -1,5 +1,5 @@
-import React from "react";
-import { ColorRing, DNA } from "react-loader-spinner";
+import React, { forwardRef } from "react";
+import { ColorRing, DNA, RotatingLines } from "react-loader-spinner";
 
 export const LoadingSpinnerDNA = ({ h, w }) => {
   return (
@@ -32,3 +32,23 @@ export const LoadingSpinnerColorRing = ({ h, w }) => {
     </>
   );
 };
+
+export const ModalLoaderRotatingLines = forwardRef(function (props, ref) {
+  return (
+    <>
+      <dialog ref={ref}>
+        <RotatingLines
+          visible={true}
+          height="96"
+          width="96"
+          color="grey"
+          strokeWidth="5"
+          animationDuration="0.75"
+          ariaLabel="rotating-lines-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+        />
+      </dialog>
+    </>
+  );
+});
