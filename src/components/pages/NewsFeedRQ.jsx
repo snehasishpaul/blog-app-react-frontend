@@ -3,11 +3,14 @@ import NewsFeedCard from "./news-feed/NewsFeedCard";
 import useAxios from "../hooks/useAxios";
 import Pagination from "react-js-pagination";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { LoadingSpinnerColorRing } from "../utils/LoadingSpinner";
+import {
+  LoadingSpinnerColorRing,
+  ModalLoaderRotatingLines,
+} from "../utils/LoadingSpinner";
 
 const NewsFeedRQ = () => {
   const { myAxios } = useAxios();
-  // const dialogRef = useRef();
+  const dialogRef = useRef();
   let cntPerPage = 5;
   let refPageNo = useRef(1);
   const [pageCount, setPageCount] = useState();
@@ -25,7 +28,7 @@ const NewsFeedRQ = () => {
 
   const loadPosts = async ({ signal }) => {
     // window.scroll(0, 0);
-    // dialogRef.current.showModal();
+    dialogRef.current.showModal();
     try {
       let filteredParam = `/api/v1/postsPaginated?`;
       refCountPerPage.current = cntPerPage;
@@ -46,7 +49,7 @@ const NewsFeedRQ = () => {
       // console.error(error);
       throw error;
     } finally {
-      // dialogRef.current.close();
+      dialogRef.current.close();
     }
   };
 
@@ -147,7 +150,7 @@ const NewsFeedRQ = () => {
           </div>
         </div>
       )}
-      {/* <ModalLoaderRotatingLines ref={dialogRef} /> */}
+      <ModalLoaderRotatingLines ref={dialogRef} />
     </>
   );
 };

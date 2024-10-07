@@ -35,20 +35,18 @@ export const LoadingSpinnerColorRing = ({ h, w }) => {
 
 export const ModalLoaderRotatingLines = forwardRef(function (props, ref) {
   return (
-    <>
-      <dialog ref={ref}>
-        <RotatingLines
-          visible={true}
-          height="96"
-          width="96"
-          color="grey"
-          strokeWidth="5"
-          animationDuration="0.75"
-          ariaLabel="rotating-lines-loading"
-          wrapperStyle={{}}
-          wrapperClass=""
-        />
-      </dialog>
-    </>
+    <dialog ref={ref}>
+      <RotatingLines
+        visible={true}
+        height="80"
+        width="80"
+        color="grey"
+        strokeWidth="5"
+        animationDuration="0.75"
+        ariaLabel="rotating-lines-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+      />
+    </dialog>
   );
 });
